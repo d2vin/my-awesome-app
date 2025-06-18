@@ -20,6 +20,8 @@ export default function ProfileScreen({ items, currentUserId }: Props) {
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
+      <SignIn />
+      
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 12 }}>My Listings</Text>
 
       <FlatList
@@ -40,8 +42,6 @@ export default function ProfileScreen({ items, currentUserId }: Props) {
         )}
         ListEmptyComponent={<Text>You haven&apos;t posted any listings yet.</Text>}
       />
-
-      <SignIn />
 
       {/* TODO: Add messaging UI later */}
       <View style={{ marginTop: 32 }}>

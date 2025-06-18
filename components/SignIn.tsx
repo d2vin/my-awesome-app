@@ -10,6 +10,7 @@ export default function SignIn() {
 
   // Check if user is already signed in on mount
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const sessionUser = supabase.auth.getUser().then(({ data }) => {
       setUser(data.user ?? null);
     });

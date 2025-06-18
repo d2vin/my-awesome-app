@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons'; // or 'react-native-vector-icons/Ionicons'
 import HomeScreen from '../screens/HomeScreen';
 import PostListingScreen from '../screens/PostListingScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -14,7 +15,26 @@ type TabNavigatorProps = {
 
 export default function TabNavigator({ items, addItem, currentUserId }: TabNavigatorProps) {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: true,
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName: keyof typeof Ionicons.glyphMap = 'home-outline';
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Post Listing') {
+            iconName = focused ? 'add-circle' : 'add-circle-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#007aff', // iOS blue
+        tabBarInactiveTintColor: 'gray',
+      })}
+    >
       <Tab.Screen name="Home">
         {() => <HomeScreen items={items} />}
       </Tab.Screen>
