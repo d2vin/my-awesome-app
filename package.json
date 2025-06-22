@@ -16,6 +16,7 @@
     "@react-navigation/native": "^7.1.11",
     "@supabase/supabase-js": "^2.50.0",
     "expo": "^53.0.11",
+    "expo-crypto": "~14.1.5",
     "expo-image-picker": "~16.1.4",
     "expo-status-bar": "~2.2.3",
     "nativewind": "latest",
@@ -26,12 +27,14 @@
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.11.1",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-web": "^0.20.0"
+    "react-native-web": "^0.20.0",
+    "tus-js-client": "^4.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~19.0.10",
     "@types/react-native": "^0.72.8",
+    "@types/tus-js-client": "^1.8.0",
     "@types/uuid": "^10.0.0",
     "eslint": "^9.25.1",
     "eslint-config-expo": "^9.2.0",
