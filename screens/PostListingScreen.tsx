@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
 import * as Crypto from 'expo-crypto';
 
+import { uploadFiles } from '../utils/tus';
 import { supabase } from '../lib/supabase';
 
 type Props = {
@@ -15,6 +15,7 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const pickImage = async () => {
@@ -27,48 +28,42 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.7,
+      allowsMultipleSelection: false,
     });
 
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+    if (!result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0];
+      setImageUri(asset.uri);
+      setImageFile(asset);
     }
   };
 
   const uuidv4 = async () => {
     const randomBytes = await Crypto.getRandomBytesAsync(16);
-    return [...randomBytes].map(b => b.toString(16).padStart(2, '0')).join('');
+    return [...randomBytes].map((b) => b.toString(16).padStart(2, '0')).join('');
   };
 
-
-  const uploadImageToSupabase = async (uri: string): Promise<string | null> => {
+  const uploadImageToSupabase = async (
+    file: ImagePicker.ImagePickerAsset
+  ): Promise<string | null> => {
     try {
       setUploading(true);
 
-      const response = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      const result: ImagePicker.ImagePickerSuccessResult = {
+        assets: [file],
+        canceled: false as false,
+      };
 
-      const fileExt = uri.split('.').pop();
-      const fileName = `${await uuidv4()}.${fileExt}`;
-      const filePath = `public/${fileName}`;
+      await uploadFiles('images', result); // your tus upload method
 
-      // const { error } = await supabase.storage
-      //   .from('images') // replace with your actual bucket name
-      //   .upload(filePath, Buffer.from(response, 'base64'), {
-      //     contentType: `image/${fileExt}`,
-      //     upsert: true,
-      //   });
-
-      const { error } = await supabase.storage
-        .from('images')
-        .upload(filePath, response, {
-          contentType: `image/${fileExt}`,
-          upsert: true,
-        });
-
-      if (error) throw error;
+      // Construct path from file name or fallback
+      const ext = file.uri.split('.').pop();
+      const objectName = file.fileName ?? `${Date.now()}.${ext}`;
+      const filePath = `${objectName}`;
+      // const filePath = `public/${objectName}`;
 
       const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+      console.log('Uploaded image URL:', data.publicUrl);
       return data.publicUrl;
     } catch (err) {
       console.error('Upload failed:', err);
@@ -86,12 +81,11 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
     }
 
     let uploadedImageUrl: string | undefined = undefined;
-    console.log('Image URI:', imageUri);
-    if (imageUri) {
-      console.log('Uploading image:', imageUri);
-      const uploaded = await uploadImageToSupabase(imageUri);
-      uploadedImageUrl = uploaded === null ? undefined : uploaded;
-      if (!uploadedImageUrl) return; // prevent submission on upload failure
+
+    if (imageUri && imageFile) {
+      const uploaded = await uploadImageToSupabase(imageFile);
+      if (!uploaded) return; // stop submission on upload failure
+      uploadedImageUrl = uploaded;
     }
 
     const newItem = {
@@ -106,6 +100,7 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
     setTitle('');
     setDescription('');
     setImageUri(null);
+    setImageFile(null);
     Alert.alert('Success', 'Listing posted!');
   };
 
