@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, FlatList, Image } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  RefreshControl,
+} from 'react-native';
 
 type Listing = {
   id: string;
@@ -11,15 +17,20 @@ type Listing = {
 
 type Props = {
   items: Listing[];
+  onRefresh: () => void;
+  refreshing: boolean;
 };
 
-export default function HomeScreen({ items }: Props) {
+export default function HomeScreen({ items, onRefresh, refreshing }: Props) {
   return (
     <View style={{ flex: 1, padding: 16 }}>
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 12 }}>Available Listings</Text>
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         renderItem={({ item }) => (
           <View style={{ marginBottom: 16, borderWidth: 1, borderRadius: 8, padding: 12 }}>
             {item.imageUri && (
