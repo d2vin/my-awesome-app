@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Image, Alert } from 'react-native';
+import { View, Text, TextInput, Button, Image, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Crypto from 'expo-crypto';
 
@@ -54,13 +54,11 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
         canceled: false as false,
       };
 
-      await uploadFiles('images', result); // your tus upload method
+      await uploadFiles('images', result);
 
-      // Construct path from file name or fallback
       const ext = file.uri.split('.').pop();
       const objectName = file.fileName ?? `${Date.now()}.${ext}`;
       const filePath = `${objectName}`;
-      // const filePath = `public/${objectName}`;
 
       const { data } = supabase.storage.from('images').getPublicUrl(filePath);
       console.log('Uploaded image URL:', data.publicUrl);
@@ -84,7 +82,7 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
 
     if (imageUri && imageFile) {
       const uploaded = await uploadImageToSupabase(imageFile);
-      if (!uploaded) return; // stop submission on upload failure
+      if (!uploaded) return;
       uploadedImageUrl = uploaded;
     }
 
@@ -105,48 +103,52 @@ export default function PostListingScreen({ onAddItem, currentUserId }: Props) {
   };
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 12 }}>Post a Listing</Text>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ width: '100%', maxWidth: 400, padding: 16 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 12, textAlign: 'center' }}>
+          Post a Listing
+        </Text>
 
-      <TextInput
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
-        style={{ borderWidth: 1, padding: 8, marginBottom: 12, borderRadius: 6 }}
-      />
-
-      <TextInput
-        placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        style={{
-          borderWidth: 1,
-          padding: 8,
-          marginBottom: 12,
-          borderRadius: 6,
-          height: 80,
-          textAlignVertical: 'top',
-        }}
-      />
-
-      <Button title="Pick an Image" onPress={pickImage} />
-
-      {imageUri && (
-        <Image
-          source={{ uri: imageUri }}
-          style={{ width: '100%', height: 200, marginTop: 12, borderRadius: 8 }}
-          resizeMode="cover"
+        <TextInput
+          placeholder="Title"
+          value={title}
+          onChangeText={setTitle}
+          style={{ borderWidth: 1, padding: 8, marginBottom: 12, borderRadius: 6 }}
         />
-      )}
 
-      <View style={{ marginTop: 16 }}>
-        <Button
-          title={uploading ? 'Uploading...' : 'Submit Listing'}
-          onPress={submitListing}
-          disabled={uploading}
+        <TextInput
+          placeholder="Description"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+          style={{
+            borderWidth: 1,
+            padding: 8,
+            marginBottom: 12,
+            borderRadius: 6,
+            height: 80,
+            textAlignVertical: 'top',
+          }}
         />
+
+        <Button title="Pick an Image" onPress={pickImage} />
+
+        {imageUri && (
+          <Image
+            source={{ uri: imageUri }}
+            style={{ width: '100%', height: 200, marginTop: 12, borderRadius: 8 }}
+            resizeMode="cover"
+          />
+        )}
+
+        <View style={{ marginTop: 16 }}>
+          <Button
+            title={uploading ? 'Uploading...' : 'Submit Listing'}
+            onPress={submitListing}
+            disabled={uploading}
+          />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }

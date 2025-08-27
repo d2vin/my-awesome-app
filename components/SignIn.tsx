@@ -46,7 +46,7 @@ export default function SignIn() {
     // Show something else when signed in
     return (
       <View>
-        <Text>Welcome, {user.email}!</Text>
+        <Text style={{ paddingBottom: 12 }}>Welcome, {user.email}!</Text>
         <Button title="Sign Out" onPress={handleSignOut} />
       </View>
     );

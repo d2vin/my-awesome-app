@@ -23,8 +23,7 @@ type Props = {
 
 export default function HomeScreen({ items, onRefresh, refreshing }: Props) {
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 12 }}>Available Listings</Text>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
@@ -32,11 +31,18 @@ export default function HomeScreen({ items, onRefresh, refreshing }: Props) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({ item }) => (
-          <View style={{ marginBottom: 16, borderWidth: 1, borderRadius: 8, padding: 12 }}>
+          <View style={{
+            marginBottom: 16,
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+            maxWidth: 400,
+            alignSelf: 'center'
+          }}>
             {item.imageUri && (
               <Image
                 source={{ uri: item.imageUri }}
-                style={{ width: '100%', height: 200, borderRadius: 8, marginBottom: 8 }}
+                style={{ width: '100%', aspectRatio: 1, borderRadius: 8, marginBottom: 8 }}
                 resizeMode="cover"
               />
             )}
@@ -44,7 +50,12 @@ export default function HomeScreen({ items, onRefresh, refreshing }: Props) {
             <Text>{item.description}</Text>
           </View>
         )}
-        ListEmptyComponent={<Text>No items available yet.</Text>}
+        ListEmptyComponent={
+          <Text style={{ textAlign: 'center' }}>
+            No items available yet.
+          </Text>
+        }
+        contentContainerStyle={{ paddingTop: 20 }}
       />
     </View>
   );
