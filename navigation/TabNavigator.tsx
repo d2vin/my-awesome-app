@@ -19,6 +19,7 @@ type Listing = {
 type TabNavigatorProps = {
   addItem: (item: Listing) => void;
   currentUserId: string;
+  items: Listing[];
 };
 
 export default function TabNavigator({ addItem, currentUserId }: TabNavigatorProps) {
