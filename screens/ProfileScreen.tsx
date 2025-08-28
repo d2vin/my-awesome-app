@@ -52,9 +52,6 @@ export default function ProfileScreen({ items, currentUserId }: Props) {
         />
 
         {/* TODO: Add messaging UI later */}
-        <View style={{ marginTop: 32, marginBottom: 16 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Messages (Coming Soon)</Text>
-        </View>
       </View>
     </ScrollView>
   );
