@@ -1,5 +1,4 @@
 import SignIn from 'components/SignIn';
-import React from 'react';
 import { View, Text, FlatList, Image, ScrollView } from 'react-native';
 
 type Listing = {
